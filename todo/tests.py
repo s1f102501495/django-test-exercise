@@ -112,6 +112,32 @@ class TodoViewTestCase(TestCase):
         response = client.get('/1/')
 
         self.assertEqual(response.status_code, 404)
+    
+    def test_close_success(self):
+        task = Task(title='task1')
+        task.save()
+        client = Client()
+        response = client.post('/{}/close'.format(task.pk))
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertTrue(task.completed)
+
+    def test_close_success_with_trailing_slash(self):
+        task = Task(title='task1')
+        task.save()
+        client = Client()
+        response = client.post('/{}/close/'.format(task.pk))
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertTrue(task.completed)
+
+    def test_close_fail(self):
+        client = Client()
+        response = client.post('/1/close')
+
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_get_success(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
@@ -156,3 +182,4 @@ class TodoViewTestCase(TestCase):
         task.refresh_from_db()
         self.assertEqual(task.title, 'updated task')
         self.assertEqual(task.due_at, timezone.make_aware(datetime(2024, 8, 1, 12, 0, 0)))
+
