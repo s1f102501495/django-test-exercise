@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.views.decorators.http import require_POST
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from todo.models import Task
@@ -35,6 +36,7 @@ def detail(request, task_id):
     return render(request, 'todo/detail.html', context)
 
 
+@require_POST
 def close(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
