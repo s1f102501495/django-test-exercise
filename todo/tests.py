@@ -106,6 +106,9 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'todo/detail.html')
         self.assertEqual(response.context['task'], task)
+        self.assertContains(response, '<form action="/{}/close" method="post"'.format(task.pk))
+        self.assertContains(response, '<button type="submit">Close</button>')
+        self.assertNotContains(response, '<a href="/{}/close">Close</a>'.format(task.pk))
 
     def test_detail_get_fail(self):
         client = Client()
@@ -138,6 +141,16 @@ class TodoViewTestCase(TestCase):
         response = client.post('/1/close')
 
         self.assertEqual(response.status_code, 404)
+
+    def test_close_get_not_allowed(self):
+        task = Task(title='task1')
+        task.save()
+        client = Client()
+        response = client.get('/{}/close'.format(task.pk))
+
+        self.assertEqual(response.status_code, 405)
+        task.refresh_from_db()
+        self.assertFalse(task.completed)
 
     def test_delete_get_success(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
@@ -182,4 +195,3 @@ class TodoViewTestCase(TestCase):
         task.refresh_from_db()
         self.assertEqual(task.title, 'updated task')
         self.assertEqual(task.due_at, timezone.make_aware(datetime(2024, 8, 1, 12, 0, 0)))
-

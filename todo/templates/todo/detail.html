@@ -24,7 +24,11 @@
 
     <div>
       <a href="{% url 'index' %}">Top</a>
-      |<a href="{%url'close'task.id}">Close</a>
+      |
+      <form action="{% url 'close' task.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">Close</button>
+      </form>
       | <a href="{% url 'update' task.id %}">Edit</a>
       | <a href="{% url 'delete' task.id %}">Delete</a>
     </div>
