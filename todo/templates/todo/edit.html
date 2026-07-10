@@ -23,7 +23,7 @@
           {% csrf_token %}
           <div class="form-group">
             <label for="titleInput">タイトル</label>
-            <input id="titleInput" name="title" type="text" placeholder="タスクのタイトル" value="{{ task.title }}">
+            <input id="titleInput" name="title" type="text" maxlength="100" placeholder="タスクのタイトル" value="{{ task.title }}">
           </div>
           <div class="form-group">
             <label for="dueInput">期限（任意）</label>
