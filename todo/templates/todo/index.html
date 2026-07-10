@@ -24,7 +24,7 @@
           {% csrf_token %}
           <div class="form-group">
             <label for="titleInput">タイトル</label>
-            <input id="titleInput" name="title" type="text" placeholder="例：レポートを提出する">
+            <input id="titleInput" name="title" type="text" maxlength="100" placeholder="例：レポートを提出する">
           </div>
           <div class="form-group">
             <label for="dueInput">期限（任意）</label>

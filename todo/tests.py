@@ -79,6 +79,14 @@ class TodoViewTestCase(TestCase):
         task = Task.objects.get(title='No due date')
         self.assertIsNone(task.due_at)
 
+    def test_index_post_with_long_title(self):
+        client = Client()
+        response = client.post('/', {'title': 'x' * 101, 'due_at': ''})
+
+        self.assertEqual(response.status_code, 200)
+        task = Task.objects.get()
+        self.assertEqual(task.title, 'x' * 100)
+
     def test_index_get_order_post(self):
         task1 = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task1.save()
@@ -202,6 +210,7 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'todo/edit.html')
         self.assertEqual(response.context['task'], task)
+        self.assertContains(response, 'maxlength="100"')
 
     def test_update_post(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
@@ -219,3 +228,13 @@ class TodoViewTestCase(TestCase):
         task.refresh_from_db()
         self.assertEqual(task.title, 'updated task')
         self.assertEqual(task.due_at, timezone.make_aware(datetime(2024, 8, 1, 12, 0, 0)))
+
+    def test_update_post_with_long_title(self):
+        task = Task(title='task1')
+        task.save()
+        client = Client()
+        response = client.post('/{}/update'.format(task.pk), {'title': 'x' * 101, 'due_at': ''})
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertEqual(task.title, 'x' * 100)

@@ -6,6 +6,11 @@ from django.utils.dateparse import parse_datetime
 from todo.models import Task
 
 
+def parse_title(value):
+    max_length = Task._meta.get_field('title').max_length
+    return (value or '')[:max_length]
+
+
 def parse_due_at(value):
     if not value:
         return None
@@ -22,7 +27,7 @@ def parse_due_at(value):
 def index(request):
     if request.method == 'POST':
         task = Task(
-            title=request.POST.get('title', ''),
+            title=parse_title(request.POST.get('title')),
             due_at=parse_due_at(request.POST.get('due_at')),
         )
         task.save()
@@ -67,7 +72,7 @@ def update(request, task_id):
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
     if request.method == 'POST':
-        task.title = request.POST.get('title', task.title)
+        task.title = parse_title(request.POST.get('title', task.title))
         task.due_at = parse_due_at(request.POST.get('due_at'))
         task.save()
         return redirect(f'/{task.id}/')
