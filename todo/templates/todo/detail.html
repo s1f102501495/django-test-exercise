@@ -3,35 +3,52 @@
 <html lang="ja">
 
   <head>
-    <title>To Do Application</title>
+    <title>{{ task.title }} | ToDoアプリ</title>
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
   </head>
 
   <body>
-    <h1>{{ task.title }}</h1>
-    <ul>
-      <li>Posted at: {{ task.posted_at }}</li>
-      {% if task.due_at %}
-      <li>Due at: {{ task.due_at }}</li>
-      {% endif %}
-      {% if task.completed %}
-      <li>Status: Completed</li>
-      {% else %}
-      <li>Status: Not Completed</li>
-      {% endif %}
-    </ul>
-
-    <div>
-      <a href="{% url 'index' %}">Top</a>
-      |
-      <form action="{% url 'close' task.id %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit">Close</button>
-      </form>
-      | <a href="{% url 'update' task.id %}">Edit</a>
-      | <a href="{% url 'delete' task.id %}">Delete</a>
-    </div>
+    <main class="page-container page-container-narrow">
+      <a class="back-link" href="{% url 'index' %}"><span aria-hidden="true">←</span> タスク一覧へ戻る</a>
+      <article class="panel detail-panel">
+        <div class="detail-heading">
+          <div>
+            <p class="eyebrow">タスク詳細</p>
+            <h1>{{ task.title }}</h1>
+          </div>
+          {% if task.completed %}
+          <span class="status status-completed">完了</span>
+          {% else %}
+          <span class="status status-open">未完了</span>
+          {% endif %}
+        </div>
+        <dl class="detail-list">
+          <div>
+            <dt>登録日時</dt>
+            <dd>{{ task.posted_at }}</dd>
+          </div>
+          {% if task.due_at %}
+          <div>
+            <dt>期限</dt>
+            <dd>{{ task.due_at }}</dd>
+          </div>
+          {% endif %}
+        </dl>
+        <div class="button-group">
+          {% if not task.completed %}
+          <form action="{% url 'close' task.id %}" method="post">
+            {% csrf_token %}
+            <button class="button button-primary" type="submit">完了にする</button>
+          </form>
+          {% endif %}
+          <a class="button button-secondary" href="{% url 'update' task.id %}">編集する</a>
+          <a class="button button-danger" href="{% url 'delete' task.id %}">削除する</a>
+        </div>
+      </article>
+    </main>
   </body>
 
 </html>

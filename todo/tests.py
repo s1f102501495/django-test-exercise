@@ -71,6 +71,14 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 1)
 
+    def test_index_post_without_due_at(self):
+        client = Client()
+        response = client.post('/', {'title': 'No due date', 'due_at': ''})
+
+        self.assertEqual(response.status_code, 200)
+        task = Task.objects.get(title='No due date')
+        self.assertIsNone(task.due_at)
+
     def test_index_get_order_post(self):
         task1 = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task1.save()
@@ -107,15 +115,31 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/detail.html')
         self.assertEqual(response.context['task'], task)
         self.assertContains(response, '<form action="/{}/close" method="post"'.format(task.pk))
-        self.assertContains(response, '<button type="submit">Close</button>')
-        self.assertNotContains(response, '<a href="/{}/close">Close</a>'.format(task.pk))
+        self.assertContains(response, '<button class="button button-primary" type="submit">完了にする</button>')
+        self.assertNotContains(response, '<a class="button button-primary" href="/{}/close">完了にする</a>'.format(task.pk))
 
     def test_detail_get_fail(self):
         client = Client()
         response = client.get('/1/')
 
         self.assertEqual(response.status_code, 404)
-    
+
+    def test_update_without_due_at(self):
+        task = Task.objects.create(
+            title='task1',
+            due_at=timezone.make_aware(datetime(2024, 7, 1)),
+        )
+        client = Client()
+        response = client.post(
+            '/{}/update'.format(task.pk),
+            {'title': 'task1 updated', 'due_at': ''},
+        )
+
+        self.assertRedirects(response, '/{}/'.format(task.pk))
+        task.refresh_from_db()
+        self.assertEqual(task.title, 'task1 updated')
+        self.assertIsNone(task.due_at)
+
     def test_close_success(self):
         task = Task(title='task1')
         task.save()
