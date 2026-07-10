@@ -3,51 +3,85 @@
 <html lang="ja">
 
   <head>
-    <title>To Do Application</title>
+    <title>ToDoアプリ</title>
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
   </head>
 
   <body>
-    <h1>Sample To Do Application</h1>
-    <p>You can submit tasks from the following form.</p>
-    <form action="{% url 'index' %}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title">
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
+    <main class="page-container">
+      <header class="page-header">
+        <p class="eyebrow">タスク管理</p>
+        <h1>ToDoアプリ</h1>
+        <p class="page-description">やることと期限を登録して、タスクを分かりやすく管理できます。</p>
+      </header>
 
-    <div>
-      <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
-    </div>
+      <section class="panel" aria-labelledby="new-task-heading">
+        <h2 id="new-task-heading" class="section-title">新しいタスクを追加</h2>
+        <form class="task-form" action="{% url 'index' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="titleInput">タイトル</label>
+            <input id="titleInput" name="title" type="text" placeholder="例：レポートを提出する">
+          </div>
+          <div class="form-group">
+            <label for="dueInput">期限（任意）</label>
+            <input id="dueInput" name="due_at" type="datetime-local">
+          </div>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">追加する</button>
+          </div>
+        </form>
+      </section>
 
-    {% for task in tasks %}
-    <div class="text">
-      <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
-      <ul>
-        <li>Posted at: {{ task.posted_at }}</li>
-        {% if task.due_at %} 
-        <li>Due at: {{ task.due_at }}</li>
-        {% endif %}
-        {% if task.completed %} 
-        <li>Status: Completed</li>
-        {% else %}
-        <li>Status: Not Completed</li>
-        {% endif %}
-      </ul>
-    </div>
-    {% endfor %}
+      <section class="task-section" aria-labelledby="task-list-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">登録済みタスク</p>
+            <h2 id="task-list-heading" class="section-title">タスク一覧</h2>
+          </div>
+          <nav class="sort-links" aria-label="タスクの並び替え">
+            <a href="{% url 'index' %}?order=due">期限順</a>
+            <a href="{% url 'index' %}?order=post">登録順</a>
+          </nav>
+        </div>
+
+        <div class="task-grid">
+          {% for task in tasks %}
+          <article class="task-card">
+            <div class="task-card-heading">
+              <h3><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h3>
+              {% if task.completed %}
+              <span class="status status-completed">完了</span>
+              {% else %}
+              <span class="status status-open">未完了</span>
+              {% endif %}
+            </div>
+            <dl class="task-meta">
+              <div>
+                <dt>登録日</dt>
+                <dd>{{ task.posted_at }}</dd>
+              </div>
+              {% if task.due_at %}
+              <div>
+                <dt>期限</dt>
+                <dd>{{ task.due_at }}</dd>
+              </div>
+              {% endif %}
+            </dl>
+            <a class="card-link" href="{% url 'detail' task.id %}">詳細を見る <span aria-hidden="true">→</span></a>
+          </article>
+          {% empty %}
+          <div class="empty-state">
+            <p class="empty-state-title">タスクはまだありません</p>
+            <p>上のフォームから最初のタスクを追加しましょう。</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
   </body>
 
 </html>

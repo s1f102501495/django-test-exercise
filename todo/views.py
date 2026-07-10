@@ -9,8 +9,13 @@ from todo.models import Task
 def parse_due_at(value):
     if not value:
         return None
-    parsed = parse_datetime(value)
-    return make_aware(parsed) if parsed is not None else None
+
+    due_at = parse_datetime(value)
+    if due_at is None:
+        return None
+    if due_at.utcoffset() is None:
+        return make_aware(due_at)
+    return due_at
 
 
 # Create your views here.
