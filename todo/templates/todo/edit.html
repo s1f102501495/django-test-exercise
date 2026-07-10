@@ -3,29 +3,39 @@
 <html lang="ja">
 
   <head>
-    <title>To Do Application</title>
+    <title>タスクを編集 | ToDoアプリ</title>
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
   </head>
 
   <body>
-    <h1>Edit task</h1>
-    <p>You can edit tasks from the following form.</p>
-    <form action="{% url 'update' task.id%}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title" value="{{ task.title }}">
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local" value="{{ task.due_at |date:"Y-m-d H:i" }}">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
+    <main class="page-container page-container-narrow">
+      <a class="back-link" href="{% url 'detail' task.id %}"><span aria-hidden="true">←</span> 詳細へ戻る</a>
+      <section class="panel">
+        <header class="form-header">
+          <p class="eyebrow">タスク編集</p>
+          <h1>タスクを編集</h1>
+          <p class="page-description">タイトルや期限を変更できます。</p>
+        </header>
+        <form class="task-form" action="{% url 'update' task.id %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="titleInput">タイトル</label>
+            <input id="titleInput" name="title" type="text" placeholder="タスクのタイトル" value="{{ task.title }}">
+          </div>
+          <div class="form-group">
+            <label for="dueInput">期限（任意）</label>
+            <input id="dueInput" name="due_at" type="datetime-local" value="{{ task.due_at|date:'Y-m-d\\TH:i' }}">
+          </div>
+          <div class="form-actions form-actions-split">
+            <a class="button button-secondary" href="{% url 'detail' task.id %}">キャンセル</a>
+            <button class="button button-primary" type="submit">変更を保存</button>
+          </div>
+        </form>
+      </section>
+    </main>
   </body>
 
 </html>
