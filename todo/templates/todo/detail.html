@@ -39,7 +39,10 @@
         </dl>
         <div class="button-group">
           {% if not task.completed %}
-          <a class="button button-primary" href="{% url 'close' task.id %}">完了にする</a>
+          <form action="{% url 'close' task.id %}" method="post">
+            {% csrf_token %}
+            <button class="button button-primary" type="submit">完了にする</button>
+          </form>
           {% endif %}
           <a class="button button-secondary" href="{% url 'update' task.id %}">編集する</a>
           <a class="button button-danger" href="{% url 'delete' task.id %}">削除する</a>
