@@ -15,7 +15,10 @@
       <header class="page-header">
         <p class="eyebrow">タスク管理</p>
         <h1>ToDoアプリ</h1>
-        <p class="page-description">やることと期限を登録して、タスクを分かりやすく管理できます。</p>
+        <nav class="view-switch" aria-label="表示形式">
+          <span aria-current="page">一覧表示</span>
+          <a href="{% url 'calendar' %}">カレンダー表示</a>
+        </nav>
       </header>
 
       <section class="panel" aria-labelledby="new-task-heading">

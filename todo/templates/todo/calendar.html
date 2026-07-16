@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <title>{{ current_month|date:'Y年n月' }}のカレンダー | ToDoアプリ</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
+  </head>
+
+  <body>
+    <main class="page-container calendar-page">
+      <header class="page-header calendar-page-header">
+        <div>
+          <p class="eyebrow">タスク管理</p>
+          <h1>カレンダー</h1>
+        </div>
+        <nav class="view-switch" aria-label="表示形式">
+          <a href="{% url 'index' %}">一覧表示</a>
+          <span aria-current="page">カレンダー表示</span>
+        </nav>
+      </header>
+
+      <section class="panel calendar-panel" aria-labelledby="calendar-heading">
+        <div class="calendar-toolbar">
+          <a class="button button-secondary" href="{% url 'calendar' %}?year={{ previous_month.year }}&amp;month={{ previous_month.month }}" aria-label="前の月">← 前月</a>
+          <div class="calendar-title">
+            <p class="eyebrow">MONTHLY VIEW</p>
+            <h2 id="calendar-heading">{{ current_month|date:'Y年n月' }}</h2>
+          </div>
+          <a class="button button-secondary" href="{% url 'calendar' %}?year={{ next_month.year }}&amp;month={{ next_month.month }}" aria-label="次の月">次月 →</a>
+        </div>
+        <div class="calendar-today-link">
+          <a href="{% url 'calendar' %}?year={{ today.year }}&amp;month={{ today.month }}">今月に戻る</a>
+        </div>
+
+        <div class="calendar-weekdays" aria-hidden="true">
+          {% for weekday in weekdays %}<span>{{ weekday }}</span>{% endfor %}
+        </div>
+        <div class="calendar-grid">
+          {% for week in calendar_weeks %}
+          <div class="calendar-week">
+            {% for day in week %}
+            <section class="calendar-day{% if not day.in_month %} calendar-day-outside{% endif %}{% if day.is_today %} calendar-day-today{% endif %}">
+              <div class="calendar-date">
+                <span class="calendar-mobile-weekday">{{ day.date|date:'D' }}</span>
+                <time datetime="{{ day.date|date:'Y-m-d' }}">{{ day.date.day }}</time>
+                {% if day.is_today %}<span class="today-label">今日</span>{% endif %}
+              </div>
+              <div class="calendar-tasks">
+                {% for task in day.tasks %}
+                <a class="calendar-task{% if task.completed %} calendar-task-completed{% endif %}" href="{% url 'detail' task.id %}">
+                  <time>{{ task.due_at|date:'H:i' }}</time>
+                  <span>{{ task.title }}</span>
+                </a>
+                {% empty %}
+                <span class="calendar-empty">予定なし</span>
+                {% endfor %}
+              </div>
+            </section>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="task-section" aria-labelledby="undated-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">期限未設定</p>
+            <h2 id="undated-heading" class="section-title">日付が決まっていないタスク</h2>
+          </div>
+        </div>
+        <div class="undated-list">
+          {% for task in undated_tasks %}
+          <a class="undated-task" href="{% url 'detail' task.id %}">
+            <span>{{ task.title }}</span>
+            {% if task.completed %}<span class="status status-completed">完了</span>{% else %}<span class="status status-open">未完了</span>{% endif %}
+          </a>
+          {% empty %}
+          <div class="empty-state">
+            <p>期限未設定のタスクはありません。</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </body>
+
+</html>
