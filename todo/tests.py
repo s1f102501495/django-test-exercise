@@ -184,14 +184,23 @@ class TodoViewTestCase(TestCase):
         task.refresh_from_db()
         self.assertFalse(task.completed)
 
-    def test_delete_get_success(self):
+    def test_delete_get_shows_confirmation(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task.save()
         client = Client()
         response = client.get('/{}/delete'.format(task.pk))
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/delete.html')
+        self.assertEqual(response.context['task'], task)
+        self.assertTrue(Task.objects.filter(pk=task.pk).exists())
+
+    def test_delete_post_success(self):
+        task = Task.objects.create(title='task1')
+        client = Client()
+        response = client.post('/{}/delete'.format(task.pk))
+
+        self.assertRedirects(response, '/')
         with self.assertRaises(Task.DoesNotExist):
             Task.objects.get(pk=task.pk)
 

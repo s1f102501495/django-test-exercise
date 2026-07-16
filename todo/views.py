@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_http_methods, require_POST
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from todo.models import Task
@@ -83,10 +83,17 @@ def update(request, task_id):
     return render(request, 'todo/edit.html', context)
 
 
+@require_http_methods(['GET', 'POST'])
 def delete(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
-    task.delete()
-    return redirect(index)
+    if request.method == 'POST':
+        task.delete()
+        return redirect(index)
+
+    context = {
+        'task': task,
+    }
+    return render(request, 'todo/delete.html', context)

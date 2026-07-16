@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <title>タスクを削除 | ToDoアプリ</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
+  </head>
+
+  <body>
+    <main class="page-container page-container-narrow">
+      <a class="back-link" href="{% url 'detail' task.id %}"><span aria-hidden="true">←</span> 詳細へ戻る</a>
+      <section class="panel delete-panel" aria-labelledby="delete-heading">
+        <p class="eyebrow">削除確認</p>
+        <h1 id="delete-heading">このタスクを削除しますか？</h1>
+        <p class="page-description">削除したタスクは元に戻せません。</p>
+
+        <div class="delete-target">
+          <span>削除するタスク</span>
+          <strong>{{ task.title }}</strong>
+        </div>
+
+        <form class="form-actions form-actions-split" action="{% url 'delete' task.id %}" method="post">
+          {% csrf_token %}
+          <a class="button button-secondary" href="{% url 'detail' task.id %}">キャンセル</a>
+          <button class="button button-danger" type="submit">削除する</button>
+        </form>
+      </section>
+    </main>
+  </body>
+
+</html>
