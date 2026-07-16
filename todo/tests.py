@@ -247,3 +247,54 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         task.refresh_from_db()
         self.assertEqual(task.title, 'x' * 100)
+
+    def test_calendar_get_for_selected_month(self):
+        task = Task.objects.create(
+            title='calendar task',
+            due_at=timezone.make_aware(datetime(2026, 7, 16, 14, 30)),
+        )
+        response = self.client.get('/calendar/?year=2026&month=7')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/calendar.html')
+        self.assertEqual(response.context['current_month'].year, 2026)
+        self.assertEqual(response.context['current_month'].month, 7)
+        days = [day for week in response.context['calendar_weeks'] for day in week]
+        target_day = next(day for day in days if day['date'].day == 16 and day['in_month'])
+        self.assertEqual(target_day['tasks'], [task])
+        self.assertContains(response, 'calendar task')
+        self.assertContains(response, 'href="/{}"'.format(task.pk))
+
+    def test_calendar_month_navigation_across_year(self):
+        response = self.client.get('/calendar/?year=2026&month=12')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['previous_month'].year, 2026)
+        self.assertEqual(response.context['previous_month'].month, 11)
+        self.assertEqual(response.context['next_month'].year, 2027)
+        self.assertEqual(response.context['next_month'].month, 1)
+
+    def test_calendar_invalid_month_falls_back_to_current_month(self):
+        response = self.client.get('/calendar/?year=invalid&month=20')
+        today = timezone.localdate()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['current_month'].year, today.year)
+        self.assertEqual(response.context['current_month'].month, today.month)
+
+    def test_calendar_shows_undated_tasks_separately(self):
+        undated_task = Task.objects.create(title='undated task')
+        response = self.client.get('/calendar/?year=2026&month=7')
+
+        self.assertContains(response, 'undated task')
+        self.assertIn(undated_task, response.context['undated_tasks'])
+
+    def test_calendar_marks_completed_task(self):
+        Task.objects.create(
+            title='completed calendar task',
+            completed=True,
+            due_at=timezone.make_aware(datetime(2026, 7, 16, 14, 30)),
+        )
+        response = self.client.get('/calendar/?year=2026&month=7')
+
+        self.assertContains(response, 'calendar-task-completed')

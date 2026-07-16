@@ -21,6 +21,7 @@ from todo import views as todo_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', todo_views.index, name='index'),
+    path('calendar/', todo_views.calendar_view, name='calendar'),
     re_path(r'^(?P<task_id>\d+)/?$', todo_views.detail, name='detail'),
     re_path(r'^(?P<task_id>\d+)/close/?$', todo_views.close, name='close'),
     re_path(r'^(?P<task_id>\d+)/update/?$', todo_views.update, name='update'),
