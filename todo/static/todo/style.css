@@ -422,6 +422,30 @@ h1 {
   grid-template-columns: 1fr;
 }
 
+.delete-panel h1 {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+}
+
+.delete-target {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1.75rem 0 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #f5c8cd;
+  border-radius: var(--radius-medium);
+  background: var(--color-danger-soft);
+}
+
+.delete-target span {
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.delete-target strong {
+  overflow-wrap: anywhere;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-container {
