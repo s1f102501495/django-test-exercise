@@ -71,6 +71,19 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 1)
 
+    def test_index_get_filter_active(self):
+        completed_task = Task(title='done', completed=True)
+        completed_task.save()
+        open_task = Task(title='open')
+        open_task.save()
+        client = Client()
+        response = client.get('/?filter=active')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['filter_mode'], 'active')
+        self.assertNotIn(completed_task, response.context['tasks'])
+        self.assertIn(open_task, response.context['tasks'])
+
     def test_index_post_without_due_at(self):
         client = Client()
         response = client.post('/', {'title': 'No due date', 'due_at': ''})
