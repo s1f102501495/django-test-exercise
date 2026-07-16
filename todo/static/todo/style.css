@@ -236,20 +236,26 @@ h1 {
 .filter-links,
 .sort-links {
   display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  gap: 0.35rem;
+  padding: 0.3rem;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  background: #f8faff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .filter-links a,
 .sort-links a {
-  padding: 0.45rem 0.7rem;
-  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
   color: #475467;
   font-size: 0.85rem;
   font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .filter-links a:hover,
@@ -258,9 +264,11 @@ h1 {
   color: var(--color-primary);
 }
 
-.filter-links a.active {
+.filter-links a.active,
+.sort-links a.active {
   background: var(--color-primary);
   color: #fff;
+  box-shadow: 0 6px 14px rgba(49, 87, 213, 0.18);
 }
 
 .task-grid {
@@ -460,6 +468,7 @@ h1 {
   .filter-links,
   .sort-links {
     width: 100%;
+    justify-content: space-between;
   }
 
   .filter-links a,
