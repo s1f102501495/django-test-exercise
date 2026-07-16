@@ -32,13 +32,20 @@ def index(request):
         )
         task.save()
 
-    if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+    filter_mode = request.GET.get('filter', 'all')
+    if filter_mode == 'active':
+        tasks = Task.objects.filter(completed=False)
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = Task.objects.all()
+
+    if request.GET.get('order') == 'due':
+        tasks = tasks.order_by('due_at')
+    else:
+        tasks = tasks.order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'filter_mode': filter_mode,
     }
     return render(request, 'todo/index.html', context)
 
