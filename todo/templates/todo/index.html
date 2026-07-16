@@ -44,12 +44,12 @@
           </div>
           <div class="toolbar-links">
             <nav class="filter-links" aria-label="タスクの表示切り替え">
-              <a href="{% url 'index' %}{% if request.GET.order %}?order={{ request.GET.order }}{% endif %}" class="{% if filter_mode == 'all' %}active{% endif %}">全て</a>
-              <a href="{% url 'index' %}?filter=active{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" class="{% if filter_mode == 'active' %}active{% endif %}">未完了のみ</a>
+              <a href="{% url 'index' %}{% if request.GET.order %}?order={{ request.GET.order }}{% endif %}" class="button {% if filter_mode == 'all' %}button-primary{% else %}button-secondary{% endif %}">全て</a>
+              <a href="{% url 'index' %}?filter=active{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" class="button {% if filter_mode == 'active' %}button-primary{% else %}button-secondary{% endif %}">未完了のみ</a>
             </nav>
             <nav class="sort-links" aria-label="タスクの並び替え">
-              <a href="{% url 'index' %}?{% if filter_mode == 'active' %}filter=active&amp;{% endif %}order=due">期限順</a>
-              <a href="{% url 'index' %}?{% if filter_mode == 'active' %}filter=active&amp;{% endif %}order=post">登録順</a>
+              <a href="{% url 'index' %}?{% if filter_mode == 'active' %}filter=active&amp;{% endif %}order=due" class="button button-secondary">期限順</a>
+              <a href="{% url 'index' %}?{% if filter_mode == 'active' %}filter=active&amp;{% endif %}order=post" class="button button-secondary">登録順</a>
             </nav>
           </div>
         </div>
